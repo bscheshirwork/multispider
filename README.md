@@ -52,7 +52,7 @@ RUN git clone https://github.com/krakjoe/pthreads.git \
 REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
 my-test-php-alpine   1                   697c02574fc9        48 minutes ago      271.6 MB
 php                  7.1-zts-alpine      c2231924b0cc        11 days ago         63.86 MB
-```s
+```
 
 К тому же, как выяснилось, последняя версия xdebug не работает с самой свежей версией php, представленной в этой сборке.
 Также смущают ошибки компиляции, видно базового набора не хватило. Печально. Пока что оставим, но запомним.
