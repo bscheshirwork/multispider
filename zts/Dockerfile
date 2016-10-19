@@ -9,9 +9,8 @@ RUN apt-get update && apt-get install -y \
         git \
         --no-install-recommends \
   && rm -r /var/lib/apt/lists/* \
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
-
-RUN git clone https://github.com/krakjoe/pthreads.git \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && git clone https://github.com/krakjoe/pthreads.git \
     && ( \
         cd pthreads \
         && phpize \
@@ -20,5 +19,5 @@ RUN git clone https://github.com/krakjoe/pthreads.git \
         && make install \
     ) \
     && rm -r pthreads \
-    && docker-php-ext-enable pthreads
-
+    && docker-php-ext-enable pthreads \
+  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

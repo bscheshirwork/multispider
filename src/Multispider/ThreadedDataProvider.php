@@ -10,10 +10,12 @@
 /**
  * Поставщик данных для потоков
  */
-class ThreadedDataProvider extends Threaded
+namespace Multispider;
+
+class ThreadedDataProvider extends \Threaded
 {
     /**
-     * @var SplQueue
+     * @var \SplQueue
      */
     private $taskQueue;
 
@@ -37,7 +39,7 @@ class ThreadedDataProvider extends Threaded
     /**
      * @param TaskData $task
      */
-    public function enqueue(TaskData $task)
+    private function enqueue(TaskData $task)
     {
         //не дружит с прямой работой(
         $taskQueue = $this->getTaskQueue();
@@ -50,7 +52,7 @@ class ThreadedDataProvider extends Threaded
      * @link http://php.net/manual/en/splqueue.dequeue.php
      * @return mixed The value of the dequeued node.
      */
-    public function dequeue(): TaskData
+    private function dequeue(): TaskData
     {
         $taskQueue = $this->getTaskQueue();
         $value = $taskQueue->dequeue();
@@ -81,10 +83,10 @@ class ThreadedDataProvider extends Threaded
     }
 
     /**
-     * @return SplQueue
+     * @return \SplQueue
      */
-    public function getTaskQueue(): SplQueue
+    private function getTaskQueue(): \SplQueue
     {
-        return $this->taskQueue ?? new SplQueue();
+        return $this->taskQueue ?? new \SplQueue();
     }
 }

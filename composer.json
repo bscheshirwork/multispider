@@ -1,0 +1,18 @@
+{
+  "name": "bscheshirwork/multispider",
+  "description": "multi-threaded file eraser",
+  "authors": [
+    {
+      "name": "BSCheshir",
+      "email": "bscheshir.work@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "monolog/monolog": "~1.3"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-0": {"Multispider": "src/"}
+  }
+}

@@ -8,9 +8,11 @@
  */
 
 /**
- * MyWork это задача, которая может выполняться параллельно
+ * это задача, которая может выполняться параллельно
  */
-class ThreadedFileEraser extends Threaded
+namespace Multispider;
+
+class ThreadedFileEraser extends \Threaded
 {
 
     public function run()
@@ -43,11 +45,11 @@ class ThreadedFileEraser extends Threaded
                 $shellCommand = 'rm ' . $taskData->getPath() . $taskData->getMask() .'';
                 $spellCheckFail = preg_filter([' /', '..', './', ';'], ['err', 'err', 'err', 'err'], [$taskData->getPath(), $taskData->getMask()]) || preg_last_error();
                 if ($spellCheckFail)
-                    throw new Exception('Wrong format of path or mask');
+                    throw new \Exception('Wrong format of path or mask');
                 else
                     $shellResult = `$shellCommand`;
                 $message = 'Work is done! ' . $shellResult;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 echo 'Remove error' . $taskData->getPath() . $taskData->getMask() . PHP_EOL;
                 $message = 'Work fail! ' . $taskData->getPath() . $taskData->getMask();
             }

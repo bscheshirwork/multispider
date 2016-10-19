@@ -10,33 +10,46 @@
 /**
  * Логирование действий воркеров, вызывается синхронизированно
  */
-class ThreadedLog extends Threaded
+namespace Multispider;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+class ThreadedLog extends \Threaded
 {
     private $start;
+
+    private $log;
 
     /**
      * ThreadedLog constructor.
      * @param $start
+     * @param null $logDir
      */
-    public function __construct($start = null)
+    public function __construct($start = null, $logDir = null)
     {
         $this->start = $start ?? microtime(true);
+        // create a log channel
+
+        $log = new Logger('main');
+        $log->pushHandler(new StreamHandler($logDir . '/main.log', Logger::INFO));
+        $this->log = $log;
     }
 
     /**
-     * Запись лога (можно расширить при наличии времени - писать в файл, писать кусками, ротация файлов, прочее)
+     * Запись лога (можно расширить при наличии времени - форматирование средствами Monolog)
      * @param $message
      */
     public function log($message)
     {
-        $template = "{date} {time}s : {mesg}" . PHP_EOL;
-        $date = date("Y-m-d H:i:s");
+        $template = "{time}s : {mesg}";
         $time = sprintf("%.6f", microtime(true) - $this->start);
-        echo strtr($template, [
-            '{date}' => $date,
+        $log = $this->log;
+        // add records to the log
+        $log->info(strtr($template, [
             '{time}' => $time,
             '{mesg}' => $message,
-        ]);
+        ]));
     }
 
     /**

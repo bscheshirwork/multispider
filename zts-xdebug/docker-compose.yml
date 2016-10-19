@@ -4,9 +4,9 @@ services:
     image: bscheshir/php:7.0.12-zts-xdebug
     restart: always
     hostname: phphost
-    working_dir: /usr/local/etc/php-code
+    working_dir: /multispider
     volumes:
-      - ./../php-code:/usr/local/etc/php-code #php-code
+      - ./..:/multispider #php-code
       - ~:/home/user
     environment:
       XDEBUG_CONFIG: remote_host=192.168.1.39

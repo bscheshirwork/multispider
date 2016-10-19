@@ -9,26 +9,21 @@
 /**
  * MyWorker тут используется, чтобы расшарить провайдер и лог между экземплярами работы.
  */
-class WorkerServiceShared extends Worker
+namespace Multispider;
+
+class WorkerServiceShared extends \Worker
 {
     /**
-     * @var ThreadedDataProvider
+     * @var Cli
      */
-    private $provider;
+    private $app;
 
     /**
-     * @var ThreadedLog $log
+     * @param Cli $app
      */
-    private $log;
-
-    /**
-     * @param ThreadedDataProvider $provider
-     * @param ThreadedLog $log
-     */
-    public function __construct(ThreadedDataProvider $provider, ThreadedLog $log)
+    public function __construct(Cli $app)
     {
-        $this->provider = $provider;
-        $this->log = $log;
+        $this->app = $app;
     }
 
     /**
@@ -46,7 +41,7 @@ class WorkerServiceShared extends Worker
      */
     public function getProvider(): ThreadedDataProvider
     {
-        return $this->provider;
+        return $this->app->service('provider');
     }
 
     /**
@@ -54,6 +49,6 @@ class WorkerServiceShared extends Worker
      */
     public function getLog(): ThreadedLog
     {
-        return $this->log;
+        return $this->app->service('log');
     }
 }

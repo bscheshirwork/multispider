@@ -4,7 +4,7 @@ services:
     image: bscheshir/php:7.0.12-zts
     restart: always
     hostname: phphost
-    working_dir: /usr/local/etc/php-code
+    working_dir: /multispider
     volumes:
-      - ./../php-code:/usr/local/etc/php-code #php-code
+      - ./..:/multispider #php-code
       - ~:/home/user

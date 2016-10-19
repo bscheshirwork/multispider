@@ -6,6 +6,8 @@
  * Date: 18.10.16
  * Time: 4:45
  */
+namespace Multispider;
+
 class TaskData
 {
     private $mask;
@@ -20,7 +22,7 @@ class TaskData
     public function __construct($path = null, $mask = null)
     {
         $this->path = $path ?? '~/.';
-        $this->mask = trim($mask,"'");
+        $this->mask = $mask;
     }
 
 
