@@ -9,3 +9,6 @@ vendor/*
 
 #logs
 logs/*
+
+#/db
+.db/*

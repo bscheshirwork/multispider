@@ -56,7 +56,7 @@ class ThreadedFileEraser extends \Threaded
 
             $log->synchronized(function ($log) use (&$message) {
                 /** @var ThreadedLog $log */
-                $log->log($message);
+                $log->info($message);
             }, $log);
 
         } while ($taskData !== null);

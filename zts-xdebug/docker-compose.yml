@@ -5,10 +5,20 @@ services:
     restart: always
     hostname: phphost
     working_dir: /multispider
+    depends_on:
+      - db
     volumes:
-      - ./..:/multispider #php-code
+      - ..:/multispider #php-code
       - ~:/home/user
     environment:
       XDEBUG_CONFIG: remote_host=192.168.1.39
       PHP_IDE_CONFIG: "serverName=multispider"
-
+  db:
+    image: postgres:9.6.0
+    restart: always
+    volumes:
+      - ../.db:/var/lib/postgresql/data #DB-data
+    environment:
+      POSTGRES_PASSWORD: multispider
+      POSTGRES_DB: multispider
+      POSTGRES_USER: multispider

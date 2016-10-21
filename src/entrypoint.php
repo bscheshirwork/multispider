@@ -18,6 +18,11 @@ $start = microtime(true);
 
 switch (true) {
     case ($argc == 1):
+    case ($argv[1] == '--run'):
+        $cliApp->run();
+        break;
+    case ($argv[1] == '--init'):
+        $cliApp->init();
         break;
     case ($argv[1] != '--add'):
     case ($argc == 2):
@@ -29,7 +34,5 @@ switch (true) {
     default:
         $cliApp->exit(1, "help: use '--add' command to schedule eraser " . PHP_EOL . "for example" . PHP_EOL . " --add /home/user/testFolder/ '*1366x768*.[png|css]'");
 }
-
-$cliApp->run();
 
 printf("Done for %.2f seconds" . PHP_EOL, microtime(true) - $start);

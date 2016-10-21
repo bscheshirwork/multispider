@@ -43,6 +43,14 @@ class Cli
             'threads' => $options['threads'] ?? 2,
             'multiplier' => $options['multiplier'] ?? 1,
             'logDir' => $options['logDir'] ?? '/multispider/logs',
+            'db' => new \ArrayObject([
+                'connectionString' => $options['db']['connectionString'] ?? 'pgsql:host=db;port=5432;dbname=multispider',
+                'user' => $options['db']['user'] ?? 'multispider',
+                'password' => $options['db']['password'] ?? 'multispider',
+                'tableName' => $options['db']['tableName'] ?? 'multispider',
+                'insertBlockSize' => $options['db']['insertBlockSize'] ?? 100,
+                'selectBlockSize' => $options['db']['selectBlockSize'] ?? 100,
+            ], \ArrayObject::ARRAY_AS_PROPS),
         ], \ArrayObject::ARRAY_AS_PROPS));
 
         // Лог
@@ -72,6 +80,13 @@ class Cli
     }
 
     /**
+     * init command
+     */
+    public function init(){
+        $this->serviceAdd('taskQueue', new TaskQueue())->init();
+    }
+
+    /**
      * Add a rule
      * @internal param $path_1
      * @internal param $mask_1
@@ -97,17 +112,20 @@ class Cli
             default:
                 $this->exit(1, 'Command add: wrong number of parameters');
         }
-        $this->serviceAdd('taskDataList', $taskDataList);
+        $this->serviceAdd('taskQueue', new TaskQueue($taskDataList));
+
     }
 
     public function run()
     {
-        $this->service('log')->log('RUN');
+        $data = $this->serviceAdd('taskQueue', new TaskQueue())->restoreData();
 
-        $data = $this->service('taskDataList', []);
         $multiplier = $this->service('options')->multiplier;
         // Создадим провайдер. Этот сервис читает данные из очереди
         $provider = $this->serviceAdd('provider', new ThreadedDataProvider($data, $multiplier));
+
+        //PDO не дружит с pthread
+        $this->serviceAdd('taskQueue');
 
         // Лог
         $log = $this->service('log');

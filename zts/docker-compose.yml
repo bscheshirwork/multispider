@@ -5,6 +5,17 @@ services:
     restart: always
     hostname: phphost
     working_dir: /multispider
+    depends_on:
+      - db
     volumes:
-      - ./..:/multispider #php-code
+      - ..:/multispider #php-code
       - ~:/home/user
+  db:
+    image: postgres:9.6.0
+    restart: always
+    volumes:
+      - ../.db:/var/lib/postgresql/data #DB-data
+    environment:
+      POSTGRES_PASSWORD: multispider
+      POSTGRES_DB: multispider
+      POSTGRES_USER: multispider

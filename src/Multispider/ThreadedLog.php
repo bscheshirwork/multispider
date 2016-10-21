@@ -40,16 +40,19 @@ class ThreadedLog extends \Threaded
      * Запись лога (можно расширить при наличии времени - форматирование средствами Monolog)
      * @param $message
      */
-    public function log($message)
+    public function info($message)
     {
-        $template = "{time}s : {mesg}";
-        $time = sprintf("%.6f", microtime(true) - $this->start);
         $log = $this->log;
-        // add records to the log
-        $log->info(strtr($template, [
-            '{time}' => $time,
-            '{mesg}' => $message,
-        ]));
+        $log->info(sprintf("%.6fs : %s", microtime(true) - $this->start, $message));
+    }
+
+    /**
+     * Запись ошибки
+     * @param $message
+     */
+    public function error($message){
+        $log = $this->log;
+        $log->error(sprintf("%.6fs : %s", microtime(true) - $this->start, $message));
     }
 
     /**
