@@ -156,3 +156,127 @@ php                  7.1-zts-alpine      c2231924b0cc        11 days ago        
 
 
 Что может быть улучшено (в рамках примера): Реализация удаления средствами php
+
+##Заметки по тестированию.
+
+Тесты для данного кода будут служить тем же целям - научится запускать их на Docker-окружении
+
+Первое - подготовить `Codeception` для тестирования этого проекта. Так как официальный образ `codeception/codeception` 
+создан на образе `php-cli`, придётся его перекомпилить.
+
+```
+git submodule add https://github.com/Codeception/Codeception.git zts-codeception/build
+cd zts-codeception/build
+git checkout 2.2 
+sed -i -e "s/^FROM.*/FROM bscheshir\/php:7.0.12-zts/" Dockerfile
+docker build -t bscheshir/codeception:zts .
+```
+
+Второе - мануал по запуску докера не соответствует образу. Используем бинд на папку проекта.
+```
+  codecept:
+    image: bscheshir/codeception:zts
+    depends_on:
+      - php
+    environment:
+      XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9005 remote_enable=On"
+      PHP_IDE_CONFIG: "serverName=codeception"
+    volumes:
+#      - ../src:/src
+#      - ../tests:/tests
+#      - ./codeception.yml:/codeception.yml
+      - ..:/project
+```
+
+Запускаем сервис `codecept`
+```
+~/projects/multispider/zts-xdebug$ docker-compose run --rm --entrypoint bash codecept
+root@e870b32bc227:/project# codecept bootstrap
+```
+
+
+Третье - для использования плюшек автодополнения и, главное, чтобы IDE не ругалась на неизвестные классы, от которых
+наследуется актёр, можно извлечь из образа исходный код фреймворка тестирования и зависимостей.
+Если codeception уже является подмодулем проекта, то его классы IDE должна подхватить. Однако, зависимости, 
+загруженные при билде образа по прежнему будут скрыты от IDE.
+
+Копируем, например, в `test/.repo` 
+```
+bogdan@bogdan-php:~/projects/multispider$ rm -R tests/.repo
+bogdan@bogdan-php:~/projects/multispider$ mkdir -p tests/.repo/vendor
+
+root@e870b32bc227:/project# cp -R /repo/vendor/* /project/tests/.repo/vendor
+
+bogdan@bogdan-php:~/projects/multispider$ sudo chown -R bogdan tests/
+```
+после генерации bootstrap классы актёров найдёт будут собраны из расширений, модулей и хелперов в `test/_supported`
+
+
+Сгенерирвоав согласно мануалам пример теста, заполним его и выполним.
+```
+~/projects/multispider/zts-xdebug$ docker-compose run --rm --entrypoint bash codecept
+root@e870b32bc227:/project# codecept run unit
+```
+
+Полезная фишка docker'a - вместо того, чтобы создавать отдельные конфиги для соединения с тестовой базой и изменять файл
+точки входи по типу `config.codeception.php` и объячлять переменные окружения
+```
+return [
+    'threads' => 2,
+    'multiplier' => 1,
+    'db' => [
+        'connectionString' => 'pgsql:host=db;port=5432;dbname=multispider_test',
+        'user' => 'multispider_test',
+        'password' => 'multispider_test',
+    ],
+];
+```
+`src/entrypoint.php`
+```
+...
+if (file_exists($configFilename = __DIR__ . '/config.' . (getenv('ENVIRONMENT') ?? '') . '.php')) {
+    $options = require_once $configFilename;
+} else {
+    $options = require_once __DIR__ . '/config.php';
+}
+...
+```
+... Вместо этого просто заменяем место хранения файлов базы в конфигурационном файле `docker-compose.yml`, 
+используемом для тестов.
+```
+    volumes:
+      - ../.db_test:/var/lib/postgresql/data #DB-data for testing is separate
+```
+(тут надо проверить, что все образы корректно остановлены/удалены, а то подключит к существующему,
+запущенному на боевой базе, сервису db)
+
+> Для создания дампа был использован `pg_dump`,который не хотел ставится на новую версию базы и в итоге, к тому же,
+подложил свинью в виде неподдерживаемого содержания.
+```
+'\Codeception\Module\Db',
+"To run 'COPY' commands 'pgsql' extension should be installed"
+```
+
+### Покрытие
+
+При "удалённом" покрытии кода после выполнения тестов 
+```
+codecept run --coverage --coverage-xml --coverage-html
+```
+Настройки веб берутся, как описано, из 
+> ```
+coverage:
+    # url of file which includes c3 router.
+    c3_url: 'http://127.0.0.1:8000/index-test.php/'
+```
+или "умно" из `acceptance.suite.yml` `(PhpBrowser:)url: http://localhost/myapp`. 
+ 
+И эта же настройка подразумевает принудительный вызов c3 после выполнения теста - для сбора информации о покрытии.
+Консольное приложение, соответственно, о таком не знает, поэтому PhpBrowser нужно явно отключить.
+
+Использование для запуска `Cli` не даёт информации о покрытии кода внутри запущеного приложения. Функциональные тесты
+Не показывают покрытия. Использовать вместе с ними эмуляцию из юнит-теста?
+
+Отчёты действительно удобно смотреть в браузере. `tests/_output/coverage/index.html` (PHPStorm открывает своим веб-сервером %))
+
+Разделены на группы, если нет классо и трейтов - зелёненьким весело подсвечивается.

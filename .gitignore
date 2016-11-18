@@ -12,3 +12,13 @@ logs/*
 
 #/db
 .db/*
+.db_test/*
+
+#tests
+tests/_output/*
+
+#codeception test engine with vendors - for autocomplite IDE
+# cp -R /repo/* /project/tests/.repo/
+# from bscheshir/codeception image
+/tests/.repo/
+

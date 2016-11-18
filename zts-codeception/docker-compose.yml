@@ -13,12 +13,24 @@ services:
     environment:
       XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9004"
       PHP_IDE_CONFIG: "serverName=multispider"
-  db:
+  db: #test database
     image: postgres:9.6.0
     restart: always
     volumes:
-      - ../.db:/var/lib/postgresql/data #DB-data
+      - ../.db_test:/var/lib/postgresql/data #DB-data for testing is separate
     environment:
       POSTGRES_PASSWORD: multispider
       POSTGRES_DB: multispider
       POSTGRES_USER: multispider
+  codecept:
+    image: bscheshir/codeception:zts
+    depends_on:
+      - php
+    environment:
+      XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9005 remote_enable=On"
+      PHP_IDE_CONFIG: "serverName=codeception"
+    volumes:
+#      - ../src:/src
+#      - ../tests:/tests
+#      - ./codeception.yml:/codeception.yml
+      - ..:/project

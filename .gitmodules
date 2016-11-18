@@ -1,0 +1,3 @@
+[submodule "zts-codeception/build"]
+	path = zts-codeception/build
+	url = https://github.com/Codeception/Codeception.git
