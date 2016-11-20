@@ -191,32 +191,40 @@ docker build -t bscheshir/codeception:zts .
 
 Запускаем сервис `codecept`
 ```
-~/projects/multispider/zts-xdebug$ docker-compose run --rm --entrypoint bash codecept
+~/projects/multispider/zts-codeception$ docker-compose run --rm --entrypoint bash codecept
 root@e870b32bc227:/project# codecept bootstrap
 ```
 
 
 Третье - для использования плюшек автодополнения и, главное, чтобы IDE не ругалась на неизвестные классы, от которых
 наследуется актёр, можно извлечь из образа исходный код фреймворка тестирования и зависимостей.
-Если codeception уже является подмодулем проекта, то его классы IDE должна подхватить. Однако, зависимости, 
-загруженные при билде образа по прежнему будут скрыты от IDE.
 
 Копируем, например, в `test/.repo` 
 ```
-bogdan@bogdan-php:~/projects/multispider$ rm -R tests/.repo
-bogdan@bogdan-php:~/projects/multispider$ mkdir -p tests/.repo/vendor
+bogdan@bogdan-php:~/projects/multispider$ rm -R tests/.repo && mkdir -p tests/.repo
+
+root@e870b32bc227:/project# cp -R /repo/* /project/tests/.repo
+
+bogdan@bogdan-php:~/projects/multispider$ sudo chown -R bogdan tests/
+```
+Если codeception уже является подмодулем проекта, то его классы IDE должна подхватить. Однако, зависимости, 
+загруженные при билде образа по прежнему будут скрыты от IDE.
+
+```
+bogdan@bogdan-php:~/projects/multispider$ rm -R tests/.repo/vendor && mkdir -p tests/.repo/vendor
 
 root@e870b32bc227:/project# cp -R /repo/vendor/* /project/tests/.repo/vendor
 
 bogdan@bogdan-php:~/projects/multispider$ sudo chown -R bogdan tests/
 ```
+
 после генерации bootstrap классы актёров IDE найдёт в любом случае - они будут собраны из расширений, 
 модулей и хелперов в `test/_supported`. 
 
 
 Сгенерирвоав согласно мануалам пример теста, заполним его и выполним.
 ```
-~/projects/multispider/zts-xdebug$ docker-compose run --rm --entrypoint bash codecept
+~/projects/multispider/zts-codeception$ docker-compose run --rm --entrypoint bash codecept
 root@e870b32bc227:/project# codecept run unit
 ```
 

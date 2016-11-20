@@ -11,7 +11,7 @@ services:
       - ..:/multispider #php-code
       - ~:/home/user
     environment:
-      XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9004"
+      XDEBUG_CONFIG: "remote_host=192.168.1.39 remote_port=9004"
       PHP_IDE_CONFIG: "serverName=multispider"
   db: #test database
     image: postgres:9.6.0
@@ -27,7 +27,7 @@ services:
     depends_on:
       - php
     environment:
-      XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9005 remote_enable=On"
+      XDEBUG_CONFIG: "remote_host=192.168.1.39 remote_port=9005 remote_enable=On"
       PHP_IDE_CONFIG: "serverName=codeception"
     volumes:
 #      - ../src:/src

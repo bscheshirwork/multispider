@@ -11,7 +11,7 @@ services:
       - ..:/multispider #php-code
       - ~:/home/user
     environment:
-      XDEBUG_CONFIG: "remote_host=192.168.88.241 remote_port=9004"
+      XDEBUG_CONFIG: "remote_host=192.168.1.39 remote_port=9004"
       PHP_IDE_CONFIG: "serverName=multispider"
   db:
     image: postgres:9.6.0

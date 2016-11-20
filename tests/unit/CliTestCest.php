@@ -57,6 +57,7 @@ class CliTestCest
          * the same object.
          */
         $I->assertSame(Multispider\Cli::app(), Multispider\Cli::app());
+        Multispider\Cli::shutdown();
     }
 
     /**
@@ -85,6 +86,7 @@ class CliTestCest
 
         $I->assertNotEmpty($cli->service('log'));
         $I->assertInstanceOf(\Multispider\ThreadedLog::class, $cli->service('log'));
+        Multispider\Cli::shutdown();
         /**
          * Only first run accept config
          */
@@ -111,6 +113,7 @@ class CliTestCest
         $I->assertNotInstanceOf(ArrayAccess::class, $cli->service('exampleService'));
         $I->assertNotEmpty($cli->service('exampleService', new \ArrayObject(['anotherProperty'=>'anotherValue'])));
         $I->assertInstanceOf(ArrayAccess::class, $cli->service('exampleService', new \ArrayObject(['thirdProperty'=>'thirdValue'])));
+        Multispider\Cli::shutdown();
     }
 
 }

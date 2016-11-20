@@ -151,4 +151,11 @@ class Cli
         echo $message . PHP_EOL;
         exit($code);
     }
+
+    /**
+     * shutdown instance cli app
+     */
+    public static function shutdown(){
+        self::$app = null;
+    }
 }
